@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  backend:
+    image: jgabrieldev/ecommerce-tcc-backend:1.0
+    ports:
+      - "5000:5000"
+
+  frontend:
+    image: jgabrieldev/ecommerce-tcc-frontend:1.0
+    ports:
+      - "3000:3000"
+
+  database:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ecommerce
+    ports:
+      - "3306:3306"

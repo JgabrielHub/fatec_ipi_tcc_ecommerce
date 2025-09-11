@@ -12,7 +12,7 @@ export default function Cadastro() {
   const handleCadastro = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3000/usuarios", {
+      await axios.post("http://localhost:5000/usuarios", {
         nome_usuario: nome,
         email_usuario: email,
         senha_usuario: senha,

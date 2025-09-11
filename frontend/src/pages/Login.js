@@ -9,7 +9,7 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3000/usuarios/login", {
+      const res = await axios.post("http://localhost:5000/usuarios/login", {
         email_usuario: email,
         senha_usuario: senha,
       });

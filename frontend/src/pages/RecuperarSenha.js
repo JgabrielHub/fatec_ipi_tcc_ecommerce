@@ -9,7 +9,7 @@ export default function RecuperarSenha() {
   const handleRecuperar = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3000/usuarios/recuperar-senha", {
+      const res = await axios.post("http://localhost:5000/usuarios/recuperar-senha", {
         email_usuario: email,
         nova_senha: novaSenha,
       });
