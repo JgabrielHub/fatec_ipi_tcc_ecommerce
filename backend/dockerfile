@@ -2,11 +2,17 @@ FROM node:18
 
 WORKDIR /app
 
+# Instala netcat-openbsd e limpa cache do apt
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
 COPY package*.json ./
 RUN npm install
-
 COPY . .
 
-EXPOSE 5000   
+# Copia o script wait-for-it.sh e dá permissão
+COPY wait-for-it.sh ./
+RUN chmod +x wait-for-it.sh
 
-CMD ["npm", "start"]
+EXPOSE 5000
+
+CMD ["./wait-for-it.sh", "database:3306", "--", "npm", "start"]
