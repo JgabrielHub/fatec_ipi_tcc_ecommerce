@@ -17,14 +17,14 @@ export default function Cadastro() {
         email_usuario: email,
         senha_usuario: senha,
         cpf_usuario: cpf,
-        endereco_usuario: endereco
+        endereco_usuario: endereco,
       });
       setMensagem("✅ Cadastro realizado com sucesso!");
       setNome("");
       setEmail("");
       setSenha("");
       setCpf("");
-      setEndereco("");  
+      setEndereco("");
     } catch (err) {
       console.error(err);
       setMensagem("❌ Erro ao cadastrar. Tente novamente.");
@@ -32,52 +32,83 @@ export default function Cadastro() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h2>Cadastro</h2>
-      <form onSubmit={handleCadastro}>
-        <input
-          type="text"
-          placeholder="Nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "10px" }}
-        />
-        <input
-          type="email"
-          placeholder="E-mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "10px" }}
-        />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "10px" }}
-        />
-        <input
-          type="text"
-          placeholder="CPF"
-          value={cpf}
-          onChange={(e) => setCpf(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "10px" }}
-        />
-        <input
-          type="text"
-          placeholder="Endereço"
-          value={endereco}
-          onChange={(e) => setEndereco(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "10px" }}
-        />
-        <button type="submit" style={{ width: "100%" }}>Cadastrar</button>
-      </form>
-      {mensagem && <p>{mensagem}</p>}
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <div className="card">
+            <div className="card-header text-center">
+              <h2>Cadastro</h2>
+            </div>
+            <div className="card-body">
+              <form onSubmit={handleCadastro}>
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label">
+                    Nome:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Nome"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    required
+                    className="form-control"
+                  />
+                  <label htmlFor="email" className="form-label">
+                    Email:
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="E-mail"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="form-control"
+                  />
+                  <label htmlFor="email" className="form-label">
+                    Senha:
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Senha"
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
+                    required
+                    className="form-control"
+                  />
+                  <label htmlFor="email" className="form-label">
+                    CPF:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="CPF"
+                    value={cpf}
+                    onChange={(e) => setCpf(e.target.value)}
+                    required
+                    className="form-control"
+                  />
+                  <label htmlFor="email" className="form-label">
+                    Endereço:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Endereço"
+                    value={endereco}
+                    onChange={(e) => setEndereco(e.target.value)}
+                    required
+                    className="form-control"
+                  />
+                  <div className="d-grid gap-2 mt-4">
+                    <button type="submit" className="btn btn-primary">
+                      Cadastrar
+                    </button>
+                  </div>
+                </div>
+              </form>
+              {mensagem && <p>{mensagem}</p>}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
