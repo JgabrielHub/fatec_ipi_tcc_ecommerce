@@ -6,7 +6,7 @@ export default function Navbar() {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <h3 style={{ margin: 0 }}>E-Commerce</h3>
       <div className="container-fluid">
-      <a className="navbar-brand" href="#">
+      <a className="navbar-brand" href="/vitrine">
           Ecommerce-TCC
       </a>
       <button
@@ -23,7 +23,7 @@ export default function Navbar() {
       <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <a className="nav-link active" aria-current="page" href="#">
+              <a className="nav-link active" aria-current="page" href="/vitrine">
                 Início
               </a>
             </li>
@@ -39,6 +39,17 @@ export default function Navbar() {
             </li>
             <li className="nav-item">
               <a className="nav-link" href="/login">
+                Login
+              </a>
+            </li>
+
+            <li className="nav-item">
+              <a className="nav-link" href="/produto/1">
+                Produto
+              </a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/personalizar/1">
                 Login
               </a>
             </li>

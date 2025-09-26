@@ -4,6 +4,9 @@ import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import Navbar from "./components/Navbar";
+import Vitrine from "./pages/Vitrine";
+import Produto from "./pages/Produto";
+import Personalizar from "./pages/Personalizar";
 
 function App() {
   return (
@@ -11,10 +14,13 @@ function App() {
       <Navbar />
       <div style={{ padding: "20px" }}>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/" element={<Vitrine />} />
+          <Route path="/vitrine" element={<Vitrine />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
           <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+          <Route path="/produto/:id" element={<Produto />} />
+          <Route path="/personalizar/:id" element={<Personalizar />} />
         </Routes>
       </div>
     </Router>

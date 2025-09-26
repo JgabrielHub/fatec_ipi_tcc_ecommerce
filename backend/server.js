@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const sequelize = require("./config/database");
 const cors = require("cors");
+
 app.use(cors());
+app.use(express.json());
 
 // Importa rotas
 const usuarioRoutes = require("./routes/usuarioRoutes");
@@ -12,14 +14,14 @@ const pagamentoRoutes = require("./routes/pagamentoRoutes");
 const personalizacaoRoutes = require("./routes/personalizacaoRoutes");
 const pedidoProdutoRoutes = require("./routes/pedidoProdutoRoutes");
 
-app.use(express.json());
-
 // Conexão
 sequelize.authenticate()
   .then(() => console.log("Banco conectado"))
-  .catch(err => console.error("Erro:", err));
+  .catch(err => console.error("Erro ao conectar no banco:", err));
 
-sequelize.sync({ alter: true });
+sequelize.sync({ alter: true })
+  .then(() => console.log("Tabelas sincronizadas"))
+  .catch(err => console.error("Erro ao sincronizar tabelas:", err));
 
 // Usa rotas
 app.use("/usuarios", usuarioRoutes);
@@ -29,7 +31,8 @@ app.use("/pagamentos", pagamentoRoutes);
 app.use("/personalizacoes", personalizacaoRoutes);
 app.use("/pedido-produtos", pedidoProdutoRoutes);
 
-app.get("/", (req, res) => res.send("API rodando"));
+// Rota de teste
+app.get("/", (req, res) => res.json({ message: "API rodando " }));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
