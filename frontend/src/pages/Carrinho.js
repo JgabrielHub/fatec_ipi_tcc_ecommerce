@@ -21,8 +21,10 @@ export default function Carrinho() {
                 <ul>
                   {item.personalizacoes.map(p => (
                     <li key={p.id_personalizacao}>
-                      {p.tipo_personalizacao} 
-                      {p.valor ? `: ${p.valor}` : ""} 
+                      {p.tipo_personalizacao}:{" "}
+                      <strong>
+                      {p.valor_escolhido || "Não informado"}
+                       </strong>{" "}
                       (+R$ {Number(p.vl_personalizacao).toFixed(2)})
                     </li>
                   ))}

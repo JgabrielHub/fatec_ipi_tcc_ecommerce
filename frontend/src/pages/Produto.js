@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useCarrinho } from "../context/CarrinhoContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Produto() {
   const { id } = useParams();
   const [produto, setProduto] = useState(null);
   const { adicionarProduto } = useCarrinho();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetch(`http://localhost:5000/produtos/${id}`)
@@ -25,16 +27,20 @@ export default function Produto() {
         <p>{produto.desc_produto}</p>
         <p className="fw-bold">Preço: R$ {Number(produto.preco_produto).toFixed(2)}</p>
         <p>Estoque: {produto.qtd_produto}</p>
-
         <Link to={`/personalizar/${produto.id_produto}`} className="btn btn-warning me-2">
           Personalizar
         </Link>
-        <button
-          className="btn btn-success"
-          onClick={() => adicionarProduto(produto, 1, [])}
-        >
-          Adicionar ao Carrinho
-        </button>
+        {!user ? (
+          <Link to="/login" className="btn btn-primary">
+            Faça login para adicionar ao carrinho
+            </Link>
+            ) : (<button
+              className="btn btn-success"
+              onClick={() => adicionarProduto(produto, 1, [])}
+              >
+              Adicionar ao Carrinho
+              </button>)}
+        
       </div>
     </div>
   );

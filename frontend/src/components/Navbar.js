@@ -5,6 +5,11 @@ import { useAuth } from "../context/AuthContext";
 export default function Navbar() {
   const { user, logout } = useAuth();
 
+  const handleLogout = () => {
+    logout();
+    window.location.href = "/";
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <h3 style={{ margin: 0 }}>PERSONALZA</h3>
@@ -53,7 +58,7 @@ export default function Navbar() {
                 <li className="nav-item">
                   <button
                     className="btn btn-link nav-link"
-                    onClick={logout}
+                    onClick={handleLogout}
                     style={{ textDecoration: "none" }}
                   >
                     Sair
