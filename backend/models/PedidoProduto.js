@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+const Pedido = require("./Pedido");
 
 const PedidoProduto = sequelize.define("PedidoProduto", {
   id_pedido_produto: {
@@ -9,18 +10,22 @@ const PedidoProduto = sequelize.define("PedidoProduto", {
   },
   id_pedido: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: Pedido,
+      key: "id_pedido"
+    }
   },
-  id_personalizacao: {
+  id_produto: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: false
   },
   qtd_pedido_produto: {
     type: DataTypes.INTEGER,
     allowNull: false
   }
 }, {
-  tableName: "pedido_produtos",
+  tableName: "pedidos_produtos",
   timestamps: false
 });
 

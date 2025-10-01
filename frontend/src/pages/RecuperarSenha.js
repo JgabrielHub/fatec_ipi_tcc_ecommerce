@@ -1,22 +1,28 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 
 export default function RecuperarSenha() {
   const [email, setEmail] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [mensagem, setMensagem] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleRecuperar = async (e) => {
     e.preventDefault();
+    setMensagem('');
+    setLoading(true);
     try {
       const res = await axios.post('http://localhost:5000/usuarios/recuperar-senha', {
         email_usuario: email,
         nova_senha: novaSenha,
       });
       setMensagem("✅ " + (res.data.message || "Senha atualizada com sucesso!"));
+      setEmail('');
+      setNovaSenha('');
     } catch (err) {
-      console.error('Erro ao recuperar senha:', err.response?.data || err.message);
       setMensagem("❌ " + (err.response?.data?.error || 'Erro ao tentar recuperar senha.'));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -24,13 +30,12 @@ export default function RecuperarSenha() {
     <div className="container-lg">
       <div className="row justify-content-center">
         <div className="col-md-8">
-          <div className="card mt-5">
+          <div className="card mt-5 shadow">
             <div className="card-header text-center">
               <h2>Recuperar senha</h2>
             </div>
             <div className="card-body">
-              <form onSubmit={handleRecuperar}>
-                {/* Campo de Email */}
+              <form onSubmit={handleRecuperar} autoComplete="off">
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">Email:</label>
                   <input
@@ -41,9 +46,9 @@ export default function RecuperarSenha() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={loading}
                   />
                 </div>
-
                 <div className="mb-3">
                   <label htmlFor="novaSenha" className="form-label">Nova Senha:</label>
                   <input
@@ -54,25 +59,24 @@ export default function RecuperarSenha() {
                     value={novaSenha}
                     onChange={(e) => setNovaSenha(e.target.value)}
                     required
+                    disabled={loading}
                   />
                 </div>
-
                 {mensagem && (
                   <div className={`alert ${mensagem.includes('✅') ? 'alert-success' : 'alert-danger'}`} role="alert">
                     {mensagem}
                   </div>
                 )}
-
                 <div className="d-grid gap-2 mt-4">
-                  <button type="submit" className="btn btn-primary">
-                    Atualizar Senha
+                  <button type="submit" className="btn btn-primary" disabled={loading}>
+                    {loading ? 'Atualizando...' : 'Atualizar Senha'}
                   </button>
                 </div>
               </form>
             </div>
             <div className="card-footer text-center">
               <a href="/cadastro" className="card-link">Não possuo cadastro</a>
-              <a href="/login" className="card-link">Tentar entrar novamente</a>
+              <a href="/login" className="card-link ms-3">Tentar entrar novamente</a>
             </div>
           </div>
         </div>

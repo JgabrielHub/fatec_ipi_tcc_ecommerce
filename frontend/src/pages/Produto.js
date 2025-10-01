@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useCarrinho } from "../context/CarrinhoContext";
 
 export default function Produto() {
   const { id } = useParams();
   const [produto, setProduto] = useState(null);
+  const { adicionarProduto } = useCarrinho();
 
   useEffect(() => {
     fetch(`http://localhost:5000/produtos/${id}`)
@@ -27,7 +29,12 @@ export default function Produto() {
         <Link to={`/personalizar/${produto.id_produto}`} className="btn btn-warning me-2">
           Personalizar
         </Link>
-        <button className="btn btn-success">Adicionar ao Carrinho</button>
+        <button
+          className="btn btn-success"
+          onClick={() => adicionarProduto(produto, 1, [])}
+        >
+          Adicionar ao Carrinho
+        </button>
       </div>
     </div>
   );

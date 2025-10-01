@@ -1,42 +1,52 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
+import axios from "axios";
+import SearchBar from "../components/SearchBar";
 
-export default function Vitrine() {
+function Vitrine() {
   const [produtos, setProdutos] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
-    fetch("http://localhost:5000/produtos")
-      .then((res) => res.json())
-      .then((data) => setProdutos(data))
-      .catch((err) => console.error("Erro ao carregar produtos:", err));
-  }, []);
+    const fetchProdutos = async () => {
+      try {
+        const params = new URLSearchParams(location.search);
+        const searchQuery = params.get("search");
+        const url = searchQuery
+          ? `http://localhost:5000/produtos/search/${searchQuery}`
+          : "http://localhost:5000/produtos";
+        const res = await axios.get(url);
+        setProdutos(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProdutos();
+  }, [location.search]);
 
   return (
-    <div className="container mt-4">
-      <h2 className="text-center mb-4">🛍️ Nossa Vitrine</h2>
+    <div>
+      <h2>Vitrine</h2>
+      <SearchBar />
       <div className="row">
-        {produtos.length > 0 ? (
-          produtos.map((produto) => (
-            <div className="col-md-4 mb-4" key={produto.id_produto}>
-              <div className="card h-100">
-                <div className="card-body text-center">
-                  <h5 className="card-title">{produto.nm_produto}</h5>
-                  <p className="card-text">{produto.desc_produto}</p>
-                  <p className="fw-bold">R$ {Number(produto.preco_produto).toFixed(2)}</p>
-                  <Link
-                    to={`/produto/${produto.id_produto}`}
-                    className="btn btn-primary"
-                  >
-                    Ver Produto
-                  </Link>
-                </div>
+        {produtos.map((produto) => (
+          <div className="col-md-4 mb-3" key={produto.id_produto}>
+            <div className="card">
+              <div className="card-body">
+                <h5>{produto.nm_produto}</h5>
+                <p>{produto.desc_produto}</p>
+                <p>R$ {produto.preco_produto}</p>
+                <Link to={`/produto/${produto.id_produto}`} className="btn btn-primary">
+                  Ver Produto
+                </Link>
               </div>
             </div>
-          ))
-        ) : (
-          <p className="text-center">Nenhum produto disponível.</p>
-        )}
+          </div>
+        ))}
       </div>
     </div>
   );
 }
+
+export default Vitrine;

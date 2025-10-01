@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+const Usuario = require("./Usuario");
 
 const Pedido = sequelize.define("Pedido", {
   id_pedido: {
@@ -9,7 +10,11 @@ const Pedido = sequelize.define("Pedido", {
   },
   id_usuario: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: Usuario,
+      key: "id_usuario"
+    }
   },
   data_pedido: {
     type: DataTypes.DATE,
@@ -17,12 +22,11 @@ const Pedido = sequelize.define("Pedido", {
   },
   status_pedido: {
     type: DataTypes.ENUM("Pendente", "Pago", "Cancelado"),
-    allowNull: false,
     defaultValue: "Pendente"
   },
   vl_total_pedido: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+    allowNull: true
   }
 }, {
   tableName: "pedidos",

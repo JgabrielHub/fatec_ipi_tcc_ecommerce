@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
-  
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mensagem, setMensagem] = useState('');
 
- 
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault(); 
     try {
@@ -15,10 +18,11 @@ export default function Login() {
         email_usuario: email,
         senha_usuario: senha,
       });
-      setMensagem('✅ Login bem-sucedido!');
-      localStorage.setItem('token', res.data.token);
-      setTimeout(() => { window.location.href = '/Users'; }, 1000);
 
+      setMensagem('✅ Login bem-sucedido!');
+      login(res.data.token); // 🔑 Salva o token no contexto + localStorage
+
+      setTimeout(() => { navigate('/'); }, 1000);
     } catch (err) {
       console.error('Erro no login:', err.response?.data || err.message);
       const errorMsg = err.response?.data?.error || 'Falha no login. Verifique suas credenciais.';
@@ -77,7 +81,7 @@ export default function Login() {
               
               <a href="/cadastro">Não tem uma conta? Cadastre-se</a>
               <span className="mx-2">ou</span>
-              <a href="/esqueci">Esqueci minha senha</a>
+              <a href="/recuperar-senha">Esqueceu sua senha?</a>
             </div>
           </div>
         </div>

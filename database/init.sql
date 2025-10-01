@@ -26,6 +26,8 @@ CREATE TABLE personalizacoes (
   id_produto INT,
   tipo_personalizacao VARCHAR(50),
   vl_personalizacao DECIMAL(10,2),
+  tipo_input ENUM('text','select','checkbox','radio') DEFAULT 'text',
+  opcoes TEXT,
   FOREIGN KEY (id_produto) REFERENCES produtos(id_produto)
 );
 
@@ -53,8 +55,18 @@ CREATE TABLE pagamentos (
 CREATE TABLE pedidos_produtos (
   id_pedido_produto INT AUTO_INCREMENT PRIMARY KEY,
   id_pedido INT,
-  id_personalizacao INT NULL,
+  id_produto INT,
   qtd_pedido_produto INT,
   FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
+  FOREIGN KEY (id_produto) REFERENCES produtos(id_produto)
+);
+
+-- Item_Personalizacoes (personalizações aplicadas a cada item do pedido)
+CREATE TABLE item_personalizacoes (
+  id_item_personalizacao INT AUTO_INCREMENT PRIMARY KEY,
+  id_pedido_produto INT,
+  id_personalizacao INT,
+  valor_escolhido VARCHAR(100), -- Ex: "Azul", "M", "João"
+  FOREIGN KEY (id_pedido_produto) REFERENCES pedidos_produtos(id_pedido_produto),
   FOREIGN KEY (id_personalizacao) REFERENCES personalizacoes(id_personalizacao)
 );

@@ -47,21 +47,47 @@ router.get("/:id", async (req, res) => {
 });
 
 // Atualizar usuário (se trocar senha, criptografa novamente)
-router.put("/:id", async (req, res) => {
-  try {
-    const usuario = await Usuario.findByPk(req.params.id);
-    if (!usuario) return res.status(404).json({ error: "Usuário não encontrado" });
+const authMiddleware = require("../middlewares/authMiddleware");
 
-    if (req.body.senha_usuario) {
-      req.body.senha_usuario = await bcrypt.hash(req.body.senha_usuario, 10);
+// Atualizar usuário (apenas se for o próprio logado)
+router.put("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Só permite alterar se o ID do token for igual ao da rota
+    if (parseInt(id) !== req.userId) {
+      return res.status(403).json({ error: "Acesso negado. Você só pode alterar seus próprios dados." });
     }
 
-    await usuario.update(req.body);
-    res.json(usuario);
+    const { nome_usuario, email_usuario, senha_usuario, cpf_usuario, endereco_usuario } = req.body;
+    const usuario = await Usuario.findByPk(id);
+
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    // Se senha foi enviada, gera novo hash
+    let senhaHash = usuario.senha_usuario;
+    if (senha_usuario) {
+      senhaHash = await bcrypt.hash(senha_usuario, 10);
+    }
+
+    // Atualiza os campos
+    await usuario.update({
+      nome_usuario: nome_usuario || usuario.nome_usuario,
+      email_usuario: email_usuario || usuario.email_usuario,
+      senha_usuario: senhaHash,
+      cpf_usuario: cpf_usuario || usuario.cpf_usuario,
+      endereco_usuario: endereco_usuario || usuario.endereco_usuario
+    });
+
+    res.json({ message: "Usuário atualizado com sucesso", usuario });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("Erro ao atualizar usuário:", err);
+    res.status(500).json({ error: "Erro no servidor" });
   }
 });
+
 
 // Deletar usuário
 router.delete("/:id", async (req, res) => {

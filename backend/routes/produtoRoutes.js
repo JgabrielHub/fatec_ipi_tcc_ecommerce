@@ -52,4 +52,21 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// Buscar produtos pelo nome
+router.get("/search/:query", async (req, res) => {
+  const { query } = req.params;
+  try {
+    const produtos = await Produto.findAll({
+      where: {
+        nm_produto: {
+          [require("sequelize").Op.like]: `%${query}%` // busca parcial
+        }
+      }
+    });
+    res.json(produtos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

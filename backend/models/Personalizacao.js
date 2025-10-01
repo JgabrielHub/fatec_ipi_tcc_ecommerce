@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+const Produto = require("./Produto");
 
 const Personalizacao = sequelize.define("Personalizacao", {
   id_personalizacao: {
@@ -9,7 +10,13 @@ const Personalizacao = sequelize.define("Personalizacao", {
   },
   id_produto: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: Produto,
+      key: "id_produto"
+    },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE"
   },
   tipo_personalizacao: {
     type: DataTypes.STRING(50),

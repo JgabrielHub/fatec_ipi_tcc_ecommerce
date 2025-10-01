@@ -14,6 +14,7 @@ const pagamentoRoutes = require("./routes/pagamentoRoutes");
 const personalizacaoRoutes = require("./routes/personalizacaoRoutes");
 const pedidoProdutoRoutes = require("./routes/pedidoProdutoRoutes");
 
+
 // Conexão
 sequelize.authenticate()
   .then(() => console.log("Banco conectado"))
