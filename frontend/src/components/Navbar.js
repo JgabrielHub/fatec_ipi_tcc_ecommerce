@@ -47,11 +47,6 @@ export default function Navbar() {
                     Login
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/carrinho">
-                    Carrinho
-                  </Link>
-                </li>
               </>
             ) : (
               <>
@@ -69,9 +64,14 @@ export default function Navbar() {
                     Minha Conta
                   </Link>
                 </li>
-                
+            
               </>
             )}
+             <li className="nav-item">
+                  <Link className="nav-link" to="/carrinho">
+                    Carrinho
+                  </Link>
+              </li>
           </ul>
         </div>
       </div>

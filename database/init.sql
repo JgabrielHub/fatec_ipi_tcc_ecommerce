@@ -1,8 +1,15 @@
-CREATE DATABASE ecommerce_tcc;
+CREATE DATABASE IF NOT EXISTS ecommerce_tcc;
 USE ecommerce_tcc;
 
+DROP TABLE IF EXISTS item_personalizacoes;
+DROP TABLE IF EXISTS pedidos_produtos;
+DROP TABLE IF EXISTS pagamentos;
+DROP TABLE IF EXISTS pedidos;
+DROP TABLE IF EXISTS personalizacoes;
+DROP TABLE IF EXISTS produtos;
+DROP TABLE IF EXISTS usuarios;
 -- Usuário
-CREATE TABLE usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
   id_usuario INT AUTO_INCREMENT PRIMARY KEY,
   cpf_usuario CHAR(11) UNIQUE,
   nome_usuario VARCHAR(100) NOT NULL,
@@ -12,7 +19,7 @@ CREATE TABLE usuarios (
 );
 
 -- Produto
-CREATE TABLE produtos (
+CREATE TABLE IF NOT EXISTS produtos (
   id_produto INT AUTO_INCREMENT PRIMARY KEY,
   nm_produto VARCHAR(100) NOT NULL,
   desc_produto VARCHAR(255),
@@ -21,7 +28,7 @@ CREATE TABLE produtos (
 );
 
 -- Personalização
-CREATE TABLE personalizacoes (
+CREATE TABLE IF NOT EXISTS personalizacoes (
   id_personalizacao INT AUTO_INCREMENT PRIMARY KEY,
   id_produto INT,
   tipo_personalizacao VARCHAR(50),
@@ -32,7 +39,7 @@ CREATE TABLE personalizacoes (
 );
 
 -- Pedido
-CREATE TABLE pedidos (
+CREATE TABLE IF NOT EXISTS pedidos (
   id_pedido INT AUTO_INCREMENT PRIMARY KEY,
   id_usuario INT,
   data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -42,7 +49,7 @@ CREATE TABLE pedidos (
 );
 
 -- Pagamento
-CREATE TABLE pagamentos (
+CREATE TABLE IF NOT EXISTS pagamentos (
   id_pagamento INT AUTO_INCREMENT PRIMARY KEY,
   id_pedido INT,
   vl_pagamento DECIMAL(10,2),
@@ -52,7 +59,7 @@ CREATE TABLE pagamentos (
 );
 
 -- Pedido_Produto
-CREATE TABLE pedidos_produtos (
+CREATE TABLE IF NOT EXISTS pedidos_produtos (
   id_pedido_produto INT AUTO_INCREMENT PRIMARY KEY,
   id_pedido INT,
   id_produto INT,
@@ -62,7 +69,7 @@ CREATE TABLE pedidos_produtos (
 );
 
 -- Item_Personalizacoes (personalizações aplicadas a cada item do pedido)
-CREATE TABLE item_personalizacoes (
+CREATE TABLE IF NOT EXISTS item_personalizacoes (
   id_item_personalizacao INT AUTO_INCREMENT PRIMARY KEY,
   id_pedido_produto INT,
   id_personalizacao INT,

@@ -1,7 +1,20 @@
+# Usar Node.js LTS
 FROM node:18
+
+# Diretório de trabalho no container
 WORKDIR /app
+
+# Copiar package.json e package-lock.json
 COPY package*.json ./
+
+# Instalar dependências
 RUN npm install
+
+# Copiar todo o código
 COPY . .
+
+# Expor porta do frontend
 EXPOSE 3000
+
+# Comando para iniciar o frontend em modo dev
 CMD ["npm", "start"]

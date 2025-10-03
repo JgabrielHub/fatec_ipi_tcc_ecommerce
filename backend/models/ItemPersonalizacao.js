@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
-const Pedido = require("./Pedido");
+const PedidoProduto = require("./PedidoProduto");
+const Personalizacao = require("./Personalizacao");
 
 const ItemPersonalizacao = sequelize.define("ItemPersonalizacao", {
   id_item_personalizacao: {
@@ -8,15 +9,20 @@ const ItemPersonalizacao = sequelize.define("ItemPersonalizacao", {
     primaryKey: true,
     autoIncrement: true
   },
-  id_pedido: {
+  id_pedido_produto: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: { model: Pedido, key: "id_pedido" }
+    references: { model: PedidoProduto, key: "id_pedido_produto" }
   },
-  id_produto: { type: DataTypes.INTEGER, allowNull: false },
-  tipo_personalizacao: { type: DataTypes.STRING(50), allowNull: false },
-  vl_personalizacao: { type: DataTypes.DECIMAL(10,2), allowNull: false },
-  valor: { type: DataTypes.STRING(255), allowNull: true } // campo opcional para texto selecionado
+  id_personalizacao: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: { model: Personalizacao, key: "id_personalizacao" }
+  },
+  valor_escolhido: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  }
 }, {
   tableName: "item_personalizacoes",
   timestamps: false

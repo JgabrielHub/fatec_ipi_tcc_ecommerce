@@ -1,11 +1,21 @@
 services:
   database:
     image: mysql:8
+    container_name: ecommerce-db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ecommerce
+      MYSQL_DATABASE: ecommerce_tcc
     ports:
       - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
 
   backend:
     build: ./backend
@@ -16,18 +26,24 @@ services:
       DB_HOST: database
       DB_USER: root
       DB_PASS: root
-      DB_NAME: ecommerce
+      DB_NAME: ecommerce_tcc
       DB_PORT: 3306
     depends_on:
-      - database
-    command: ["./wait-for-it.sh", "database", "3306", "--", "npm", "start"]
+      database:
+        condition: service_healthy
+    command: sh -c "npm install && npm start"
     restart: unless-stopped
 
   frontend:
-    image: jgabrieldev/ecommerce-tcc-frontend:1.0
+    build: ./frontend
     container_name: ecommerce-frontend
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_started
+    command: sh -c "npm install && npm start"
     restart: unless-stopped
+
+volumes:
+  db_data:

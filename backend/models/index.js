@@ -4,6 +4,7 @@ const Pagamento = require("./Pagamento");
 const Produto = require("./Produto");
 const Personalizacao = require("./Personalizacao");
 const PedidoProduto = require("./PedidoProduto");
+const ItemPersonalizacao = require("./ItemPersonalizacao");
 
 // 📌 Relações
 
@@ -27,11 +28,14 @@ PedidoProduto.belongsTo(Pedido, { foreignKey: "id_pedido" });
 Personalizacao.hasMany(PedidoProduto, { foreignKey: "id_personalizacao" });
 PedidoProduto.belongsTo(Personalizacao, { foreignKey: "id_personalizacao" });
 
+
+
 module.exports = {
   Usuario,
   Pedido,
   Pagamento,
   Produto,
   Personalizacao,
-  PedidoProduto
+  PedidoProduto,
+  ItemPersonalizacao
 };
