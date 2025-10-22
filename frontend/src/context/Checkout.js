@@ -1,28 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
 import { useCarrinho } from "../context/CarrinhoContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Checkout() {
-  const {
-    carrinho,
-    removerProduto,
-    atualizarQuantidade,
-    totalCarrinho,
-    limparCarrinho,
-  } = useCarrinho();
+  const { carrinho, totalCarrinho, limparCarrinho } = useCarrinho();
+  const { user } = useAuth();
+
+  const [metodoPagamento, setMetodoPagamento] = useState("");
+  const [endereco, setEndereco] = useState("");
+  const [frete, setFrete] = useState(0);
+  const [prazo, setPrazo] = useState("");
+
+  const calcularFrete = () => {
+    setFrete(19.9);
+    setPrazo("5 a 7 dias úteis");
+  };
 
   const handleFinalizarCompra = async () => {
-    const id_usuario = 1; // Substitua pelo usuário logado
+    if (!metodoPagamento || !endereco) {
+      alert("Preencha todos os campos obrigatórios!");
+      return;
+    }
+    if (!user?.id_usuario) {
+      alert("Você precisa estar logado para finalizar a compra!");
+      return;
+    }
+
+    const id_usuario = user?.id_usuario; // <- cuidado aqui
+
+    console.log("🔍 Enviando checkout:", {
+      id_usuario,
+      carrinho,
+      metodo_pagamento: metodoPagamento,
+      endereco,
+      frete,
+      prazo,
+      total: totalCarrinho + frete,
+    });
 
     try {
       const response = await fetch("http://localhost:5000/pedidos/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_usuario, carrinho }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({
+          id_usuario: user.id_usuario,
+          carrinho,
+          metodo_pagamento: metodoPagamento,
+          endereco,
+          frete,
+          prazo,
+          total: totalCarrinho + frete,
+        }),
       });
 
       const data = await response.json();
       if (response.ok) {
-        alert("Pedido realizado com sucesso!");
+        alert("✅ Pedido realizado com sucesso!");
         limparCarrinho();
       } else {
         alert(`Erro: ${data.error}`);
@@ -40,65 +76,105 @@ export default function Checkout() {
     <div className="container mt-4">
       <h2 className="mb-4">🛒 Checkout</h2>
 
-      <div className="list-group mb-4">
-        {carrinho.map((item, index) => (
-          <div
-            key={index}
-            className="list-group-item d-flex justify-content-between align-items-start"
+      <ul className="list-group mb-4">
+        {carrinho.map((item, i) => (
+          <li
+            key={i}
+            className="list-group-item d-flex justify-content-between"
           >
             <div>
-              <h5>{item.produto.nm_produto}</h5>
-              {item.personalizacoes.length > 0 && (
-                <ul className="mb-1">
-                  {item.personalizacoes.map((p) => (
-                    <li key={p.id_personalizacao}>
-                      {p.tipo_personalizacao}{" "}
-                      {p.valor ? `: ${p.valor}` : ""} (+R$ {p.vl_personalizacao})
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <p className="mb-1">
-                Preço unitário: R$ {item.precoUnitario.toFixed(2)}
-              </p>
-              <p className="mb-1">
-                Subtotal: R$ {(item.precoUnitario * item.qtd).toFixed(2)}
-              </p>
+              <strong>{item.produto.nm_produto}</strong> × {item.qtd}
             </div>
-
-            <div className="d-flex align-items-center gap-2">
-              <button
-                className="btn btn-secondary"
-                onClick={() =>
-                  atualizarQuantidade(index, item.qtd - 1)
-                }
-              >
-                -
-              </button>
-              <span>{item.qtd}</span>
-              <button
-                className="btn btn-secondary"
-                onClick={() =>
-                  atualizarQuantidade(index, item.qtd + 1)
-                }
-              >
-                +
-              </button>
-              <button
-                className="btn btn-danger ms-3"
-                onClick={() => removerProduto(index)}
-              >
-                Remover
-              </button>
-            </div>
-          </div>
+            <span>R$ {(item.precoUnitario * item.qtd).toFixed(2)}</span>
+          </li>
         ))}
+      </ul>
+
+      <div className="mb-3">
+        <label className="form-label">Endereço de entrega</label>
+        <input
+          className="form-control"
+          value={endereco}
+          onChange={(e) => setEndereco(e.target.value)}
+          placeholder="Rua, número, bairro, cidade"
+        />
       </div>
 
-      <div className="text-end">
-        <h4>Total: R$ {totalCarrinho.toFixed(2)}</h4>
+      <div className="mb-3">
+        <label className="form-label">Método de Pagamento</label>
+        <select
+          className="form-select"
+          value={metodoPagamento}
+          onChange={(e) => setMetodoPagamento(e.target.value)}
+        >
+          <option value="">Selecione</option>
+          <option value="cartao">Cartão de Crédito</option>
+          <option value="boleto">Boleto</option>
+          <option value="pix">Pix</option>
+        </select>
+        <div className="mt-3">
+          {metodoPagamento === "cartao" && (
+            <div>
+              <input
+                type="text"
+                className="form-control mb-2"
+                placeholder="Número do Cartão"
+              />
+              <input
+                type="text"
+                className="form-control mb-2"
+                placeholder="Nome no Cartão"
+              />
+              <div className="d-flex">
+                {" "}
+                <input
+                  type="text"
+                  className="form-control me-2"
+                  placeholder="Validade"
+                />
+                <input type="text" className="form-control" placeholder="CVV" />
+              </div>
+            </div>
+          )}
+          {metodoPagamento === "boleto" && (
+            <p>
+              Você receberá o boleto no seu e-mail após a confirmação do pedido.
+            </p>
+          )}
+          {metodoPagamento === "pix" && (
+            <p>
+              Você receberá as instruções para pagamento via Pix após a
+              confirmação do pedido.
+            </p>
+          )}
+        </div>
+        <div>
+          <label className="form-label">Cálculo de Frete</label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Digite seu CEP"
+          />
+        </div>
+      </div>
+
+      <button className="btn btn-outline-primary mb-3" onClick={calcularFrete}>
+        Calcular Frete
+      </button>
+
+      {frete > 0 && (
+        <p>
+          Frete: <strong>R$ {frete.toFixed(2)}</strong> — Prazo: {prazo}
+        </p>
+      )}
+
+      <h4 className="text-end">
+        Total: R$ {(totalCarrinho + frete).toFixed(2)}
+      </h4>
+
+      <div className="text-end mt-3">
         <button className="btn btn-success" onClick={handleFinalizarCompra}>
-          Finalizar Compra
+          Confirmar Pedido
         </button>
       </div>
     </div>

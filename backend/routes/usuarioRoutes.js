@@ -3,11 +3,18 @@ const router = express.Router();
 const { Usuario } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const authMiddleware = require("../middleware/authMiddleware");
 
 // Criar usuário (com senha criptografada)
 router.post("/", async (req, res) => {
   try {
     const { nome_usuario, email_usuario, senha_usuario, cpf_usuario, endereco_usuario } = req.body;
+
+    // Verifica duplicidade de e-mail
+    const usuarioExistente = await Usuario.findOne({ where: { email_usuario } });
+    if (usuarioExistente) {
+      return res.status(400).json({ error: "E-mail já cadastrado" });
+    }
 
     const senhaHash = await bcrypt.hash(senha_usuario, 10);
 
@@ -15,12 +22,13 @@ router.post("/", async (req, res) => {
       nome_usuario,
       email_usuario,
       senha_usuario: senhaHash,
-      cpf_usuario,          // agora é opcional
-      endereco_usuario      // idem
+      cpf_usuario,
+      endereco_usuario
     });
 
     res.status(201).json(novoUsuario);
   } catch (err) {
+    console.error("Erro ao criar usuário:", err);
     res.status(400).json({ error: err.message });
   }
 });
@@ -46,10 +54,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Atualizar usuário (se trocar senha, criptografa novamente)
-const authMiddleware = require("../middlewares/authMiddleware");
-
-// Atualizar usuário (apenas se for o próprio logado)
+// Atualizar usuário (com verificação de token)
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
@@ -66,13 +71,11 @@ router.put("/:id", authMiddleware, async (req, res) => {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
 
-    // Se senha foi enviada, gera novo hash
     let senhaHash = usuario.senha_usuario;
     if (senha_usuario) {
       senhaHash = await bcrypt.hash(senha_usuario, 10);
     }
 
-    // Atualiza os campos
     await usuario.update({
       nome_usuario: nome_usuario || usuario.nome_usuario,
       email_usuario: email_usuario || usuario.email_usuario,
@@ -111,12 +114,14 @@ router.post("/login", async (req, res) => {
     const senhaValida = await bcrypt.compare(senha_usuario, usuario.senha_usuario);
     if (!senhaValida) return res.status(401).json({ error: "Senha incorreta" });
 
-    const token = jwt.sign({ id: usuario.id_usuario }, "seu_segredo_jwt", { expiresIn: "1h" });
-    res.json({ message: "Login bem-sucedido", token });
+    const token = jwt.sign({ id_usuario: usuario.id_usuario }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    
+    res.json({ message: "Login bem-sucedido", token, usuario }); // <-- aqui enviamos o usuário
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Recuperação de senha (simples)
 router.post("/recuperar-senha", async (req, res) => {

@@ -18,9 +18,9 @@ export default function Login() {
         email_usuario: email,
         senha_usuario: senha,
       });
-
-      setMensagem('✅ Login bem-sucedido!');
-      login(res.data.token); // 🔑 Salva o token no contexto + localStorage
+      
+      // Ajuste para armazenar id_usuario junto com token
+      login(res.data.token, res.data.usuario);
 
       setTimeout(() => { navigate('/'); }, 1000);
     } catch (err) {

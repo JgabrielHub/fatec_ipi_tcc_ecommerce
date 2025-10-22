@@ -7,6 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // Importa rotas
+const middleware = require("./middleware/authMiddleware");
 const usuarioRoutes = require("./routes/usuarioRoutes");
 const produtoRoutes = require("./routes/produtoRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
@@ -31,6 +32,7 @@ app.use("/pedidos", pedidoRoutes);
 app.use("/pagamentos", pagamentoRoutes);
 app.use("/personalizacoes", personalizacaoRoutes);
 app.use("/pedido-produtos", pedidoProdutoRoutes);
+app.use(middleware);
 
 // Rota de teste
 app.get("/", (req, res) => res.json({ message: "API rodando " }));

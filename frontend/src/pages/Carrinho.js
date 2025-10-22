@@ -1,9 +1,11 @@
 import React from "react";
 import { useCarrinho } from "../context/CarrinhoContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Carrinho() {
   const { carrinho, removerProduto, atualizarQuantidade, limparCarrinho, totalCarrinho } = useCarrinho();
 
+  const navigate = useNavigate();
   if (carrinho.length === 0) {
     return <h3 className="text-center mt-5">🛒 Seu carrinho está vazio</h3>;
   }
@@ -45,7 +47,7 @@ export default function Carrinho() {
       <div className="mt-4 text-end">
         <h4>Total: R$ {totalCarrinho.toFixed(2)}</h4>
         <button className="btn btn-warning me-2" onClick={limparCarrinho}>Limpar Carrinho</button>
-        <button className="btn btn-success">Finalizar Compra</button>
+        <button className="btn btn-success" onClick={() => navigate("/checkout")}>Finalizar Compra</button>
       </div>
     </div>
   );

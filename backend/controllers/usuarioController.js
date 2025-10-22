@@ -1,4 +1,6 @@
 import Usuario from "../models/Usuario.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 export default {
   async listar(_req, res) {
@@ -90,5 +92,44 @@ export default {
       console.error("Erro ao deletar usuário:", err);
       res.status(500).json({ error: "Erro ao deletar usuário" });
     }
+  },
+
+  async login(req, res) {
+  const { email_usuario, senha_usuario } = req.body;
+
+  try {
+    const usuario = await Usuario.findOne({ where: { email_usuario } });
+
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    // Verifica a senha
+    const senhaValida = await bcrypt.compare(senha_usuario, usuario.senha_usuario);
+    if (!senhaValida) {
+      return res.status(401).json({ error: "Senha incorreta" });
+    }
+
+    // Gera o token JWT
+    const token = jwt.sign(
+      { id_usuario: usuario.id_usuario },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // Retorna o token + dados
+    res.json({
+      token,
+      usuario: {
+        id_usuario: usuario.id_usuario,
+        nome_usuario: usuario.nome_usuario,
+        email_usuario: usuario.email_usuario
+      }
+    });
+  } catch (err) {
+    console.error("Erro no login:", err);
+    res.status(500).json({ error: "Erro no servidor durante o login" });
   }
+}
+
 };
