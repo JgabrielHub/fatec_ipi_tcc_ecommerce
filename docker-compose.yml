@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   database:
     image: mysql:8
@@ -15,10 +17,13 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       retries: 10
+      timeout: 5s
     restart: unless-stopped
+    networks:
+      - ecommerce-network
 
   backend:
-    build: ./backend
+    image: jgabrieldev/ecommerce-tcc-backend:1.2.0
     container_name: ecommerce-backend
     ports:
       - "5000:5000"
@@ -28,22 +33,30 @@ services:
       DB_PASS: root
       DB_NAME: ecommerce_tcc
       DB_PORT: 3306
+      JWT_SECRET: meusegredoseguro
+      NODE_ENV: production
     depends_on:
       database:
         condition: service_healthy
-    command: sh -c "npm install && npm start"
     restart: unless-stopped
+    networks:
+      - ecommerce-network
 
   frontend:
-    build: ./frontend
+    image: jgabrieldev/ecommerce-tcc-frontend:1.2.0
     container_name: ecommerce-frontend
     ports:
       - "3000:3000"
     depends_on:
       backend:
         condition: service_started
-    command: sh -c "npm install && npm start"
     restart: unless-stopped
+    networks:
+      - ecommerce-network
 
 volumes:
   db_data:
+
+networks:
+  ecommerce-network:
+    driver: bridge
