@@ -5,12 +5,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middleware/authMiddleware");
 
-// Criar usuário (com senha criptografada)
+// 🟩 Criar usuário
 router.post("/", async (req, res) => {
   try {
     const { nome_usuario, email_usuario, senha_usuario, cpf_usuario, endereco_usuario } = req.body;
 
-    // Verifica duplicidade de e-mail
     const usuarioExistente = await Usuario.findOne({ where: { email_usuario } });
     if (usuarioExistente) {
       return res.status(400).json({ error: "E-mail já cadastrado" });
@@ -23,7 +22,7 @@ router.post("/", async (req, res) => {
       email_usuario,
       senha_usuario: senhaHash,
       cpf_usuario,
-      endereco_usuario
+      endereco_usuario,
     });
 
     res.status(201).json(novoUsuario);
@@ -33,7 +32,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Listar todos usuários
+// 🟩 Listar usuários
 router.get("/", async (req, res) => {
   try {
     const usuarios = await Usuario.findAll();
@@ -43,7 +42,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Buscar usuário por ID
+// 🟩 Buscar usuário por ID
 router.get("/:id", async (req, res) => {
   try {
     const usuario = await Usuario.findByPk(req.params.id);
@@ -54,13 +53,13 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Atualizar usuário (com verificação de token)
+// 🟩 Atualizar usuário (autenticado)
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Só permite alterar se o ID do token for igual ao da rota
-    if (parseInt(id) !== req.userId) {
+    // Verifica se o ID do token é o mesmo do usuário a ser atualizado
+    if (parseInt(id) !== req.user.id_usuario) {
       return res.status(403).json({ error: "Acesso negado. Você só pode alterar seus próprios dados." });
     }
 
@@ -81,7 +80,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
       email_usuario: email_usuario || usuario.email_usuario,
       senha_usuario: senhaHash,
       cpf_usuario: cpf_usuario || usuario.cpf_usuario,
-      endereco_usuario: endereco_usuario || usuario.endereco_usuario
+      endereco_usuario: endereco_usuario || usuario.endereco_usuario,
     });
 
     res.json({ message: "Usuário atualizado com sucesso", usuario });
@@ -91,12 +90,18 @@ router.put("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-
-// Deletar usuário
-router.delete("/:id", async (req, res) => {
+// 🟩 Deletar usuário (autenticado)
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
-    const usuario = await Usuario.findByPk(req.params.id);
+    const { id } = req.params;
+
+    if (parseInt(id) !== req.user.id_usuario) {
+      return res.status(403).json({ error: "Acesso negado." });
+    }
+
+    const usuario = await Usuario.findByPk(id);
     if (!usuario) return res.status(404).json({ error: "Usuário não encontrado" });
+
     await usuario.destroy();
     res.json({ message: "Usuário removido com sucesso" });
   } catch (err) {
@@ -104,9 +109,9 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// Login de usuário
+// 🟩 Login
 router.post("/login", async (req, res) => {
-  const { email_usuario, senha_usuario } = req.body; 
+  const { email_usuario, senha_usuario } = req.body;
   try {
     const usuario = await Usuario.findOne({ where: { email_usuario } });
     if (!usuario) return res.status(404).json({ error: "Usuário não encontrado" });
@@ -114,16 +119,17 @@ router.post("/login", async (req, res) => {
     const senhaValida = await bcrypt.compare(senha_usuario, usuario.senha_usuario);
     if (!senhaValida) return res.status(401).json({ error: "Senha incorreta" });
 
+    // 🔥 Gera o token JWT com id_usuario
     const token = jwt.sign({ id_usuario: usuario.id_usuario }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    
-    res.json({ message: "Login bem-sucedido", token, usuario }); // <-- aqui enviamos o usuário
+
+    res.json({ message: "Login bem-sucedido", token, usuario });
   } catch (err) {
+    console.error("Erro no login:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
-
-// Recuperação de senha (simples)
+// 🟩 Recuperar senha
 router.post("/recuperar-senha", async (req, res) => {
   const { email_usuario, nova_senha } = req.body;
 

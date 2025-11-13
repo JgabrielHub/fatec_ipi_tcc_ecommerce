@@ -24,11 +24,18 @@ Personalizacao.belongsTo(Produto, { foreignKey: "id_produto" });
 Pedido.hasMany(PedidoProduto, { foreignKey: "id_pedido" });
 PedidoProduto.belongsTo(Pedido, { foreignKey: "id_pedido" });
 
-// Personalizacao → PedidoProduto (opcional)
-Personalizacao.hasMany(PedidoProduto, { foreignKey: "id_personalizacao" });
-PedidoProduto.belongsTo(Personalizacao, { foreignKey: "id_personalizacao" });
+// Produto → PedidoProduto
+Pedido.hasMany(PedidoProduto, { foreignKey: "id_pedido", as: "itens" });
+PedidoProduto.belongsTo(Pedido, { foreignKey: "id_pedido" });
+PedidoProduto.belongsTo(Produto, { foreignKey: "id_produto", as: "produto" });
 
+// PedidoProduto → ItemPersonalizacao
+PedidoProduto.hasMany(ItemPersonalizacao, { foreignKey: "id_pedido_produto", as: "personalizacoes" });
+ItemPersonalizacao.belongsTo(PedidoProduto, { foreignKey: "id_pedido_produto" });
 
+// Personalizacao → ItemPersonalizacao
+Personalizacao.hasMany(ItemPersonalizacao, { foreignKey: "id_personalizacao" });
+ItemPersonalizacao.belongsTo(Personalizacao, { foreignKey: "id_personalizacao" });
 
 module.exports = {
   Usuario,

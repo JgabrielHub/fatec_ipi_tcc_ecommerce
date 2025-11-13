@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
   id_pedido INT AUTO_INCREMENT PRIMARY KEY,
   id_usuario INT,
   data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
-  status_pedido ENUM('Pendente','Pago','Cancelado') DEFAULT 'Pendente',
+  status_pedido ENUM('Pendente', 'Pago', 'Aprovado', 'Em transporte', 'Entregue', 'Cancelado') DEFAULT 'Pendente',
   vl_total_pedido DECIMAL(10,2),
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );

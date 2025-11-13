@@ -9,6 +9,8 @@ import Vitrine from "./pages/Vitrine";
 import Produto from "./pages/Produto";
 import Carrinho from "./pages/Carrinho";
 import Checkout from "./context/Checkout";
+import Pedidos from "./pages/Pedidos";
+import Footer from "./components/Footer";
 import { CarrinhoProvider } from "./context/CarrinhoContext";
 
 function App() {
@@ -27,9 +29,11 @@ function App() {
           <Route path="/produto/:id" element={<Produto />} />
           <Route path="/carrinho" element={<Carrinho />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/pedidos" element={<Pedidos />} />
           <Route path="*" element={<div>Página não encontrada</div>} />
         </Routes>
       </div>
+      <Footer/>
     </Router>
 </CarrinhoProvider>
   );

@@ -13,7 +13,7 @@ export default function SearchBar() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="d-flex mb-3">
+    <form onSubmit={handleSubmit} className="d-flex me-3">
       <input
         type="text"
         placeholder="Buscar produtos..."

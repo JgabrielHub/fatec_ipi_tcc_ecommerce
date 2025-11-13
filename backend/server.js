@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const sequelize = require("./config/database");
 const cors = require("cors");
-
+require("./models/index.js");
 app.use(cors());
 app.use(express.json());
 

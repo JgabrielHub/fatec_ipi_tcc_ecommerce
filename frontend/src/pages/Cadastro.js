@@ -5,17 +5,25 @@ export default function Cadastro() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
   const [cpf, setCpf] = useState("");
   const [endereco, setEndereco] = useState("");
   const [mensagem, setMensagem] = useState("");
 
   const handleCadastro = async (e) => {
     e.preventDefault();
+
+    if (senha !== confirmarSenha) {
+      setMensagem("❌ As senhas não coincidem.");
+      return;
+    }
+
     try {
       await axios.post("http://localhost:5000/usuarios", {
         nome_usuario: nome,
         email_usuario: email,
         senha_usuario: senha,
+        confirmarSenha: confirmarSenha,
         cpf_usuario: cpf,
         endereco_usuario: endereco,
       });
@@ -23,6 +31,7 @@ export default function Cadastro() {
       setNome("");
       setEmail("");
       setSenha("");
+      setConfirmarSenha("");
       setCpf("");
       setEndereco("");
     } catch (err) {
@@ -35,9 +44,9 @@ export default function Cadastro() {
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <div className="card">
+          <div className="card mt-5 shadow">
             <div className="card-header text-center">
-              <h2>Cadastro</h2>
+              <h2 className="card-title">Cadastro</h2>
             </div>
             <div className="card-body">
               <form onSubmit={handleCadastro}>
@@ -76,6 +85,17 @@ export default function Cadastro() {
                     className="form-control"
                   />
                   <label htmlFor="email" className="form-label">
+                    Confirmar senha:
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="Confirmar Senha"
+                    value={confirmarSenha}
+                    onChange={(e) => setConfirmarSenha(e.target.value)}
+                    required
+                    className="form-control"
+                  />
+                  <label htmlFor="email" className="form-label">
                     CPF:
                   </label>
                   <input
@@ -104,6 +124,9 @@ export default function Cadastro() {
                   </div>
                 </div>
               </form>
+            </div>
+            
+            <div className="card-footer text-center">
               {mensagem && <p>{mensagem}</p>}
             </div>
           </div>

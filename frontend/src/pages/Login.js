@@ -34,9 +34,9 @@ export default function Login() {
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <div className="card">
+          <div className="card shadow">
             <div className="card-header text-center">
-              <h2>Login</h2>
+              <h2 className='card-title'>Login</h2>
             </div>
             <div className="card-body">
               <form onSubmit={handleLogin}>

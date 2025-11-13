@@ -7,25 +7,25 @@ const ItemPersonalizacao = sequelize.define("ItemPersonalizacao", {
   id_item_personalizacao: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   id_pedido_produto: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: { model: PedidoProduto, key: "id_pedido_produto" }
+    references: { model: PedidoProduto, key: "id_pedido_produto" },
   },
   id_personalizacao: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: { model: Personalizacao, key: "id_personalizacao" }
+    references: { model: Personalizacao, key: "id_personalizacao" },
   },
   valor_escolhido: {
     type: DataTypes.STRING(100),
-    allowNull: true
-  }
+    allowNull: true,
+  },
 }, {
   tableName: "item_personalizacoes",
-  timestamps: false
+  timestamps: false,
 });
 
 module.exports = ItemPersonalizacao;
