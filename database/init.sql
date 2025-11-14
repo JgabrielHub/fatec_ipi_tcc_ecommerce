@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
   email_usuario VARCHAR(150) UNIQUE NOT NULL,
   senha_usuario VARCHAR(255) NOT NULL,
   endereco_usuario VARCHAR(255)
+  tipo_usuario ENUM('cliente','admin') NOT NULL DEFAULT 'cliente',
 );
 
 -- Produto
@@ -43,7 +44,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
   id_pedido INT AUTO_INCREMENT PRIMARY KEY,
   id_usuario INT,
   data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
-  status_pedido ENUM('Pendente', 'Pago', 'Aprovado', 'Em transporte', 'Entregue', 'Cancelado') DEFAULT 'Pendente',
+  status_pedido ENUM('Pendente','Pago','Em Produção','Em Transporte','Cancelado','Entregue'), DEFAULT 'Pendente',
   vl_total_pedido DECIMAL(10,2),
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
@@ -74,6 +75,7 @@ CREATE TABLE IF NOT EXISTS item_personalizacoes (
   id_pedido_produto INT,
   id_personalizacao INT,
   valor_escolhido VARCHAR(100), -- Ex: "Azul", "M", "João"
+  vl_personalizacao FLOAT NOT NULL DEFAULT 0,
   FOREIGN KEY (id_pedido_produto) REFERENCES pedidos_produtos(id_pedido_produto),
   FOREIGN KEY (id_personalizacao) REFERENCES personalizacoes(id_personalizacao)
 );

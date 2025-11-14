@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import SearchBar from "../components/SearchBar";
@@ -45,6 +45,7 @@ export default function Navbar() {
                   <Link className="nav-link" to="/carrinho">
                     Carrinho
                   </Link>
+                  
             </li>
             {!user ? (
               <>
@@ -70,7 +71,7 @@ export default function Navbar() {
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >
-                      Minha Conta
+                      Minha Conta {user.nome_usuario}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-dark text-center">
                       <li>
@@ -96,6 +97,13 @@ export default function Navbar() {
                   </li>
                 </ul>
               </>
+            )}
+            {user && user.tipo_usuario === "admin" && (
+              <li className="nav-item">
+                <Link className="nav-link btn btn-danger me-2" to="/admin/pedidos">
+                  Painel Administrativo
+                </Link>
+              </li>
             )}
           </ul>
         </div>

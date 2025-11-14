@@ -1,190 +1,101 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useState } from 'react';
+import axios from 'axios';
 
-function EditarPerfil() {
-  const { user, setUser } = useAuth();
-  const [formData, setFormData] = useState({
-    nome_usuario: "",
-    email_usuario: "",
-    senha_usuario: "",
-    confirmarSenha: "",
-    cpf_usuario: "",
-    endereco_usuario: "",
-  });
+export default function RecuperarSenha() {
+  const [email, setEmail] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [mensagem, setMensagem] = useState('');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); // "success" | "error"
 
-  // 🔹 Preenche os dados do usuário logado
-  useEffect(() => {
-    if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        nome_usuario: user.nome_usuario || "",
-        email_usuario: user.email_usuario || "",
-        cpf_usuario: user.cpf_usuario || "",
-        endereco_usuario: user.endereco_usuario || "",
-      }));
-    }
-  }, [user]);
-
-  // 🔹 Atualiza o form
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // 🔹 Envia as alterações
-  const handleSubmit = async (e) => {
+  const handleRecuperar = async (e) => {
     e.preventDefault();
-
-    if (!user?.id_usuario) {
-      setMessage("Usuário não está definido. Faça login novamente.");
-      setMessageType("error");
-      return;
-    }
-
-    if (formData.senha_usuario && formData.senha_usuario !== formData.confirmarSenha) {
-      setMessage("❌ As senhas não coincidem.");
-      setMessageType("error");
-      return;
-    }
-
+    setMensagem('');
     setLoading(true);
+    if (novaSenha !== confirmarSenha) {
+      setMensagem("❌ As senhas não coincidem.");
+      return;
+    }
+
     try {
-      const dataToSend = { ...formData };
-      delete dataToSend.confirmarSenha; // não precisa enviar
-
-      if (!formData.senha_usuario) {
-        delete dataToSend.senha_usuario;
-      }
-
-      // 🔹 Inclui o token JWT no cabeçalho
-      const response = await fetch(`http://localhost:5000/usuarios/${user.id_usuario}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`, // <- necessário
-        },
-        body: JSON.stringify(dataToSend),
+      const res = await axios.post('http://localhost:5000/usuarios/recuperar-senha', {
+        email_usuario: email,
+        nova_senha: novaSenha,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Erro ao atualizar perfil");
-      }
-
-      const updatedUser = await response.json();
-
-      setMessage("✅ Perfil atualizado com sucesso!");
-      setMessageType("success");
-
-      // Atualiza o contexto do usuário
-      setUser((prev) => ({
-        ...prev,
-        ...updatedUser,
-      }));
-    } catch (error) {
-      console.error("Erro:", error);
-      setMessage(error.message || "Erro ao atualizar perfil");
-      setMessageType("error");
+      setMensagem("✅ " + (res.data.message || "Senha atualizada com sucesso!"));
+      setEmail('');
+      setNovaSenha('');
+    } catch (err) {
+      setMensagem("❌ " + (err.response?.data?.error || 'Erro ao tentar recuperar senha.'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container-lg">
       <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card shadow">
-            <div className="card-header text-center bg-primary text-white">
-              <h2 className="card-title">Editar Perfil</h2>
+        <div className="col-md-8">
+          <div className="card mt-5 shadow">
+            <div className="card-header text-center">
+              <h2 className="card-title">Recuperar senha</h2>
             </div>
             <div className="card-body">
-              {message && (
-                <div
-                  className={`alert ${
-                    messageType === "success" ? "alert-success" : "alert-danger"
-                  }`}
-                  role="alert"
-                >
-                  {message}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} autoComplete="off">
+              <form onSubmit={handleRecuperar} autoComplete="off">
                 <div className="mb-3">
-                  <label className="form-label">Nome:</label>
-                  <input
-                    type="text"
-                    name="nome_usuario"
-                    value={formData.nome_usuario}
-                    onChange={handleChange}
-                    className="form-control"
-                    required
-                  />
-
-                  <label className="form-label mt-3">CPF:</label>
-                  <input
-                    type="text"
-                    name="cpf_usuario"
-                    value={formData.cpf_usuario}
-                    onChange={handleChange}
-                    className="form-control"
-                    required
-                  />
-
-                  <label className="form-label mt-3">E-mail:</label>
+                  <label htmlFor="email" className="form-label">Email:</label>
                   <input
                     type="email"
-                    name="email_usuario"
-                    value={formData.email_usuario}
-                    onChange={handleChange}
                     className="form-control"
+                    id="email"
+                    placeholder="Digite seu email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={loading}
                   />
-
-                  <label className="form-label mt-3">Nova Senha:</label>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="novaSenha" className="form-label">Nova Senha:</label>
                   <input
                     type="password"
-                    name="senha_usuario"
-                    value={formData.senha_usuario}
-                    onChange={handleChange}
                     className="form-control"
-                    placeholder="Digite a nova senha (opcional)"
+                    id="novaSenha"
+                    placeholder="Digite sua nova senha"
+                    value={novaSenha}
+                    onChange={(e) => setNovaSenha(e.target.value)}
+                    required
+                    disabled={loading}
                   />
-
-                  <label className="form-label mt-3">Confirmar Senha:</label>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="confirmarSenha" className="form-label">Confirmar Nova Senha:</label>
                   <input
                     type="password"
-                    name="confirmarSenha"
-                    value={formData.confirmarSenha}
-                    onChange={handleChange}
                     className="form-control"
-                    placeholder="Confirme a nova senha"
-                  />
-
-                  <label className="form-label mt-3">Endereço:</label>
-                  <input
-                    type="text"
-                    name="endereco_usuario"
-                    value={formData.endereco_usuario}
-                    onChange={handleChange}
-                    className="form-control"
+                    id="confirmarSenha"
+                    placeholder="Confirme sua nova senha"
+                    value={confirmarSenha}
+                    onChange={(e) => setConfirmarSenha(e.target.value)}
                     required
+                    disabled={loading}
                   />
-
-                  <div className="d-grid gap-2 mt-4">
-                    <button type="submit" className="btn btn-primary" disabled={loading}>
-                      {loading ? "Salvando..." : "Salvar Alterações"}
-                    </button>
+                </div>
+                {mensagem && (
+                  <div className={`alert ${mensagem.includes('✅') ? 'alert-success' : 'alert-danger'}`} role="alert">
+                    {mensagem}
                   </div>
+                )}
+                <div className="d-grid gap-2 mt-4">
+                  <button type="submit" className="btn btn-primary" disabled={loading}>
+                    {loading ? 'Atualizando...' : 'Atualizar Senha'}
+                  </button>
                 </div>
               </form>
+            </div>
+            <div className="card-footer text-center">
+              <a href="/cadastro" className="card-link">Não possuo cadastro</a>
+              <a href="/login" className="card-link ms-3">Tentar entrar novamente</a>
             </div>
           </div>
         </div>
@@ -192,5 +103,3 @@ function EditarPerfil() {
     </div>
   );
 }
-
-export default EditarPerfil;

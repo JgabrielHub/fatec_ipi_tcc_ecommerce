@@ -10,6 +10,7 @@ import Produto from "./pages/Produto";
 import Carrinho from "./pages/Carrinho";
 import Checkout from "./context/Checkout";
 import Pedidos from "./pages/Pedidos";
+import AdminPedidos from "./pages/AdminPedidos";
 import Footer from "./components/Footer";
 import { CarrinhoProvider } from "./context/CarrinhoContext";
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/pedidos" element={<Pedidos />} />
           <Route path="*" element={<div>Página não encontrada</div>} />
+          <Route path="/admin/pedidos" element={<AdminPedidos />} />
         </Routes>
       </div>
       <Footer/>

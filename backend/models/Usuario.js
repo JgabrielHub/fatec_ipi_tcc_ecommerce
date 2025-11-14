@@ -31,6 +31,11 @@ const Usuario = sequelize.define("Usuario", {
   endereco_usuario: {
     type: DataTypes.STRING(255),
     allowNull: true
+  },
+    tipo_usuario: {
+    type: DataTypes.ENUM('cliente','admin'),
+    allowNull: false,
+    defaultValue: 'cliente'
   }
 }, {
   tableName: "usuarios",

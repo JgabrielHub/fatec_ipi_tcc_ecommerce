@@ -23,6 +23,11 @@ const ItemPersonalizacao = sequelize.define("ItemPersonalizacao", {
     type: DataTypes.STRING(100),
     allowNull: true,
   },
+   vl_personalizacao: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    defaultValue: 0,
+  },
 }, {
   tableName: "item_personalizacoes",
   timestamps: false,

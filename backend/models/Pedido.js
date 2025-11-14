@@ -21,7 +21,7 @@ const Pedido = sequelize.define("Pedido", {
     defaultValue: DataTypes.NOW,
   },
   status_pedido: {
-    type: DataTypes.ENUM('Pendente', 'Pago', 'Aprovado', 'Em transporte', 'Entregue', 'Cancelado'),
+    type: DataTypes.ENUM('Pendente','Pago','Em Produção','Em Transporte','Cancelado','Entregue'),
     defaultValue: "Pendente",
   },
   vl_total_pedido: {

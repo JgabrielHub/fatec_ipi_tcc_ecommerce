@@ -32,6 +32,7 @@ app.use("/pedidos", pedidoRoutes);
 app.use("/pagamentos", pagamentoRoutes);
 app.use("/personalizacoes", personalizacaoRoutes);
 app.use("/pedido-produtos", pedidoProdutoRoutes);
+app.use("/admin/pedidos", require("./routes/admin/pedidosAdminRoutes.js"));
 app.use(middleware);
 
 // Rota de teste

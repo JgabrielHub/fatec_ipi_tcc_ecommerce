@@ -3,7 +3,10 @@ import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 const LoadingSpinner = () => (
-  <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "200px" }}>
+  <div
+    className="d-flex justify-content-center align-items-center"
+    style={{ minHeight: "200px" }}
+  >
     <div className="spinner-border text-primary" role="status">
       <span className="visually-hidden">Carregando...</span>
     </div>
@@ -29,7 +32,10 @@ export default function Pedidos() {
       setPedidos(res.data.pedidos || []);
     } catch (err) {
       console.error("Erro ao buscar pedidos:", err);
-      setError("Falha ao buscar seus pedidos. " + (err.response?.data?.error || err.message));
+      setError(
+        "Falha ao buscar seus pedidos. " +
+          (err.response?.data?.error || err.message)
+      );
     } finally {
       setLoading(false);
     }
@@ -58,37 +64,46 @@ export default function Pedidos() {
   };
 
   const confirmarEntrega = async (id_pedido) => {
-  if (!window.confirm("Deseja confirmar a entrega deste pedido?")) return;
+    if (!window.confirm("Deseja confirmar a entrega deste pedido?")) return;
 
-  try {
-    await axios.put(`http://localhost:5000/pedidos/${id_pedido}/entregar`, null, {
-      headers: { Authorization: `Bearer ${user.token}` },
-    });
+    try {
+      await axios.put(
+        `http://localhost:5000/pedidos/${id_pedido}/entregar`,
+        null,
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+        }
+      );
 
-    setPedidos((prev) =>
-      prev.map((p) =>
-        p.id_pedido === id_pedido ? { ...p, status_pedido: "Entregue" } : p
-      )
-    );
+      setPedidos((prev) =>
+        prev.map((p) =>
+          p.id_pedido === id_pedido ? { ...p, status_pedido: "Entregue" } : p
+        )
+      );
 
-    alert("Entrega confirmada com sucesso!");
-  } catch (err) {
-    console.error("Erro ao confirmar entrega:", err);
-    alert("Erro ao confirmar entrega.");
-  }
-};
+      alert("Entrega confirmada com sucesso!");
+    } catch (err) {
+      console.error("Erro ao confirmar entrega:", err);
+      alert("Erro ao confirmar entrega.");
+    }
+  };
 
   const renderContent = () => {
     if (loading) return <LoadingSpinner />;
     if (error) return <div className="alert alert-danger mt-3">{error}</div>;
     if (pedidos.length === 0)
-      return <div className="alert alert-info mt-3">Nenhum pedido encontrado.</div>;
+      return (
+        <div className="alert alert-info mt-3">Nenhum pedido encontrado.</div>
+      );
 
     return (
       <div className="mt-4">
         <ul className="list-group list-group-flush">
           {pedidos.map((pedido) => (
-            <li key={pedido.id_pedido} className="list-group-item mb-3 shadow-sm border rounded p-3">
+            <li
+              key={pedido.id_pedido}
+              className="list-group-item mb-3 shadow-sm border rounded p-3"
+            >
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <h5 className="mb-0">Pedido #{pedido.id_pedido}</h5>
                 <span
@@ -97,10 +112,12 @@ export default function Pedidos() {
                       ? "danger"
                       : pedido.status_pedido === "Pago"
                       ? "info text-dark"
-                      : pedido.status_pedido === "Em transporte"
-                      ? "secondary text-white"
-                      : pedido.status_pedido === "Entregue"
+                      : pedido.status_pedido === "Em Transporte"
                       ? "primary"
+                      : pedido.status_pedido === "Entregue"
+                      ? "success"
+                      : pedido.status_pedido === "Pendente"
+                      ? "secondary"
                       : "warning"
                   }`}
                 >
@@ -109,7 +126,9 @@ export default function Pedidos() {
               </div>
 
               <div className="d-flex justify-content-between text-muted small mb-2">
-                <span>Data: {new Date(pedido.data_pedido).toLocaleDateString()}</span>
+                <span>
+                  Data: {new Date(pedido.data_pedido).toLocaleDateString()}
+                </span>
                 <span className="fw-bold fs-6 text-dark">
                   Total: R$ {Number(pedido.vl_total_pedido).toFixed(2)}
                 </span>
@@ -117,17 +136,21 @@ export default function Pedidos() {
 
               <ul className="mt-2">
                 {pedido.itens.map((item) => {
-                  const produtoNome = item.produto?.nm_produto || "Produto desconhecido";
+                  const produtoNome =
+                    item.produto?.nm_produto || "Produto desconhecido";
                   const precoProduto = Number(item.produto?.preco_produto || 0);
                   const qtd = Number(item.qtd_pedido_produto || 1);
 
                   // soma personalizações
-                  const totalPersonalizacoes = (item.personalizacoes || []).reduce(
+                  const totalPersonalizacoes = (
+                    item.personalizacoes || []
+                  ).reduce(
                     (acc, p) => acc + Number(p.vl_personalizacao || 0),
                     0
                   );
 
-                  const precoTotal = (precoProduto + totalPersonalizacoes) * qtd;
+                  const precoTotal =
+                    (precoProduto + totalPersonalizacoes) * qtd;
 
                   return (
                     <li key={item.id_pedido_produto} className="mb-2">
@@ -135,7 +158,7 @@ export default function Pedidos() {
                         <span>
                           {produtoNome} x {qtd}
                         </span>
-                        <span>R$ {precoTotal.toFixed(2)}</span>
+                        <span>R$ {precoProduto.toFixed(2)}</span>
                       </div>
                       {item.personalizacoes?.length > 0 && (
                         <ul className="ms-4 text-muted small">
@@ -155,25 +178,24 @@ export default function Pedidos() {
               </ul>
 
               <div className="d-flex justify-content-end mt-3 gap-2">
-  {pedido.status_pedido === "Pendente" && (
-    <button
-      className="btn btn-outline-danger btn-sm"
-      onClick={() => cancelarPedido(pedido.id_pedido)}
-    >
-      Cancelar pedido
-    </button>
-  )}
+                {pedido.status_pedido === "Pendente" && (
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={() => cancelarPedido(pedido.id_pedido)}
+                  >
+                    Cancelar pedido
+                  </button>
+                )}
 
-  {(pedido.status_pedido === "Em transporte" || pedido.status_pedido === "Aprovado") && (
-    <button
-      className="btn btn-outline-success btn-sm"
-      onClick={() => confirmarEntrega(pedido.id_pedido)}
-    >
-      Confirmar entrega
-    </button>
-  )}
-</div>
-
+                {pedido.status_pedido === "Em Transporte" && (
+                  <button
+                    className="btn btn-outline-success btn-sm"
+                    onClick={() => confirmarEntrega(pedido.id_pedido)}
+                  >
+                    Confirmar entrega
+                  </button>
+                )}
+              </div>
             </li>
           ))}
         </ul>
