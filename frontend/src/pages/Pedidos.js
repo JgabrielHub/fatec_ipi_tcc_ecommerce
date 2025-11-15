@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
@@ -20,8 +20,8 @@ export default function Pedidos() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const fetchPedidos = async () => {
-    if (!user) return;
+   const fetchPedidos = useCallback( async () => {
+    if (!user?.token) return;
 
     setLoading(true);
     setError("");
@@ -39,11 +39,27 @@ export default function Pedidos() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.token]);
 
+  // useEffect que chama fetchPedidos; dependência é fetchPedidos (estável)
   useEffect(() => {
-    fetchPedidos();
-  }, [user]);
+    let isMounted = true;
+
+    // envolver a chamada para prevenir setState após unmount
+    const safeFetch = async () => {
+      // se não estiver montado, não chamar
+      if (!isMounted) return;
+      await fetchPedidos();
+    };
+
+    safeFetch();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchPedidos]);
+
+
 
   // 🔹 Função para cancelar pedido
   const cancelarPedido = async (id_pedido) => {
@@ -141,16 +157,6 @@ export default function Pedidos() {
                   const precoProduto = Number(item.produto?.preco_produto || 0);
                   const qtd = Number(item.qtd_pedido_produto || 1);
 
-                  // soma personalizações
-                  const totalPersonalizacoes = (
-                    item.personalizacoes || []
-                  ).reduce(
-                    (acc, p) => acc + Number(p.vl_personalizacao || 0),
-                    0
-                  );
-
-                  const precoTotal =
-                    (precoProduto + totalPersonalizacoes) * qtd;
 
                   return (
                     <li key={item.id_pedido_produto} className="mb-2">

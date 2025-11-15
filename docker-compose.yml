@@ -1,4 +1,3 @@
-version: "3.8"
 
 services:
   database:
@@ -23,7 +22,7 @@ services:
       - ecommerce-network
 
   backend:
-    image: jgabrieldev/ecommerce-tcc-backend:1.2.0
+    image: jgabrieldev/ecommerce-tcc-backend:1.3.0
     container_name: ecommerce-backend
     ports:
       - "5000:5000"
@@ -42,8 +41,24 @@ services:
     networks:
       - ecommerce-network
 
+  seed:
+    image: jgabrieldev/ecommerce-tcc-backend:1.3.0
+    container_name: ecommerce-seed
+    command: node seed/seed-admin.js
+    environment:
+      DB_HOST: database
+      DB_USER: root
+      DB_PASS: root
+      DB_NAME: ecommerce_tcc
+      DB_PORT: 3306
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+
   frontend:
-    image: jgabrieldev/ecommerce-tcc-frontend:1.2.0
+    image: jgabrieldev/ecommerce-tcc-frontend:1.3.0
     container_name: ecommerce-frontend
     ports:
       - "3000:3000"

@@ -131,13 +131,6 @@ export default function AdminPedidos() {
                     const preco = Number(item.produto?.preco_produto || 0);
                     const qtd = Number(item.qtd_pedido_produto || 1);
 
-                    // Agora usando vl_personalizacao corretamente
-                    const totalPers = (item.personalizacoes || []).reduce(
-                      (acc, pers) => acc + Number(pers.vl_personalizacao || 0),
-                      0
-                    );
-
-                    const total = (preco + totalPers) * qtd;
 
                     return (
                       <li key={item.id_pedido_produto} className="mb-2">
